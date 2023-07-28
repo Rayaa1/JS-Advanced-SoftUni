@@ -35,14 +35,14 @@ export async function editPage(ctx) {
     salary
   }) {
 
-    if ([{
+    if ([
       title,
       imageUrl,
       category,
       description,
       requirements,
       salary
-    }].some(i => i == '')) {
+    ].some(i => i == '')) {
       return alert('All field are required')
     }
     await updateOffer(id,{
