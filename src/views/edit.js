@@ -24,7 +24,7 @@ const editTemplate = (offer,onEdit) => html` <section id="edit">
 export async function editPage(ctx) {
   const id = ctx.params.id
     const offer =await getById(id)
-  ctx.render(editTemplate(offer,createSumbitHandler)((onEdit)))
+  ctx.render(editTemplate(offer,createSumbitHandler(onEdit)))
 
   async function onEdit({
     title,
