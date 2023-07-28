@@ -1,12 +1,11 @@
 import { del, get, post, put } from "./api.js";
 
 const endpoints = {
-    catalog: '/data/offers?sortBy=_createdOn%20desc',
-    byId: '/data/offers'
+    catalog: '/data/pets?sortBy=_createdOn%20desc&distinct=name',
+    byId: '/data/pets/'
 }
 export async function getAllOffers(){
     return get(endpoints.catalog)
-
 }
 
 export async function getById(id){

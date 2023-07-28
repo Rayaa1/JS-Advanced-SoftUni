@@ -1,19 +1,30 @@
-import {html} from '../../node_modules/lit-html/lit-html.js'
-import { login } from '../data/auth.js'
-import { createSumbitHandler } from '../util.js'
+import { html } from "../lib.js";
+import { login } from "../data/auth.js";
+import { createSumbitHandler } from "../util.js";
 
-const loginTemplate = (onLogin)=>html`
-<section id="login">
-          <div class="form">
-            <h2>Login</h2>
-            <form class="login-form" @submit=${onLogin}>
-              <input type="text" name="email" id="email" placeholder="email" />
-              <input type="password" name="password" id="password" placeholder="password"/>
-              <button type="submit">login</button>
-              <p class="message"> Not registered? <a href="/register">Create an account</a></p>
-            </form>
-          </div>
-        </section>`
+
+const loginTemplate = (onLogin) => html`<section id="loginPage">
+<form class="loginForm" @submit=${onLogin}>
+    <img src="./images/logo.png" alt="logo" />
+    <h2>Login</h2>
+
+    <div>
+        <label for="email">Email:</label>
+        <input id="email" name="email" type="text" placeholder="steven@abv.bg" value="">
+    </div>
+
+    <div>
+        <label for="password">Password:</label>
+        <input id="password" name="password" type="password" placeholder="********" value="">
+    </div>
+
+    <button class="btn" type="submit">Login</button>
+
+    <p class="field">
+        <span>If you don't have profile click <a href="/register">here</a></span>
+    </p>
+</form>
+</section>`
 
 export function loginPage(ctx){
     ctx.render(loginTemplate(createSumbitHandler(onLogin)))
@@ -24,7 +35,7 @@ export function loginPage(ctx){
         }
         await login(email,password)
         form.reset()
-        ctx.page.redirect('/catalog')
+        ctx.updateNav()
+        ctx.page.redirect('/')
     }
-
 }

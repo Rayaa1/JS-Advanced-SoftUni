@@ -1,25 +1,28 @@
-import { html } from '../../node_modules/lit-html/lit-html.js'
-import { getAllOffers } from '../data/offers.js'
+import { html } from "../lib.js";
+import { getAllOffers } from "../data/offers.js";
 
-//TODO
 const catalogTemplate = (offers) => html`
 <section id="dashboard">
-          <h2>Job Offers</h2>
+    <h2 class="dashboard-title">Services for every animal</h2>
+        <div class="animals-dashboard">
+            ${offers.length == 0 ? html`
+            <div>
+                <p class="no-pets">No pets in dashboard</p>
+            </div>`: offers.map(p => html`
+        <div class="animals-board">
+           <article class="service-img">
+             <img class="animal-image-cover" src="${p.image}">
+           </article>
+          <h2 class="name">${p.name}</h2>
+          <h3 class="breed">${p.breed}</h3>
+           <div class="action">
+           <a class="btn" href="/catalog/${p._id}">Details</a>
+           </div>
+        </div>`)} 
+        </div>
+</section>`
 
-          ${offers.length > 0 ? offers.map(offerCard) : html`<h2>No offers yet.</h2>`}
-        </section>
-`
 
-const offerCard = (offer) => html`
-<div class="offer">
-            <img src=${offer.imageUrl} alt="example2" />
-            <p>
-              <strong>Title: </strong
-              ><span class="title">${offer.title}</span>
-            </p>
-            <p><strong>Salary:</strong><span class="salary">${offer.salary}</span></p>
-            <a class="details-btn" href="/catalog/${offer._id}">Details</a>
-          </div>`
 export async function catalogPage(ctx) {
     const offers = await getAllOffers()
     ctx.render(catalogTemplate(offers))
