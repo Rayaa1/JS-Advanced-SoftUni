@@ -1,52 +1,48 @@
-import * as api from "./api.js";
+import { del, get, post, put } from './api.js';
 
-const host = "http://localhost:3030";
-api.settings.host = host;
+const endpoints = {
+    getAll: '/data/facts?sortBy=_createdOn%20desc',
+    getById: '/data/facts/',
+    create: '/data/facts',
+    edit: '/data/facts/',
+    delete: '/data/facts/',
+    like: '/data/likes',
+    totalLikes: (factId) => `/data/likes?where=factId%3D%22${factId}%22&distinct=_ownerId&count`,
+    hasLiked: (factId, userId) => `/data/likes?where=factId%3D%22${factId}%22%20and%20_ownerId%3D%22${userId}%22&count`,
+};
 
-export const login = api.login;
-export const register = api.register;
-export const logout = api.logout;
-
-// Application-specific request
-// get all listings
-export async function getAllEvents() {
-  return await api.get(host + "/data/events?sortBy=_createdOn%20desc");
+export async function getAll() {
+    return get(endpoints.getAll);
 }
 
-// get listing by id
-export async function getEvenetById(id) {
-  return await api.get(host + `/data/events/${id}`);
+export async function getMyTheaters(id) {
+    return get(endpoints.getMyTheaters(id));
 }
 
-// create listing
-export async function addEvent(event) {
-  return await api.post(host + "/data/events", event);
+export async function getById(id) {
+    return get(endpoints.getById + id);
 }
 
-// edit listing by id
-export async function editEventById(id, event) {
-  return await api.put(host + `/data/events/${id}`, event);
+export async function create(data) {
+    return post(endpoints.create, data);
 }
 
-// delete listing by id
-export async function deleteEventById(id) {
-  return await api.del(host + `/data/events/${id}`);
+export async function edit(id, data) {
+    return put(endpoints.edit + id, data);
 }
 
-export async function go(eventId) {
-  return await api.post(host + `/data/going`, eventId);
+export async function deleteItem(id) {
+    return del(endpoints.delete + id);
 }
 
-export async function getTotalGoes(eventId) {
-  return await api.get(
-    host +
-      `/data/going?where=eventId%3D%22${eventId}%22&distinct=_ownerId&count`
-  );
+export async function like(factId) {
+    return post(endpoints.like, { factId });
 }
 
-export async function didUserGo(eventId, userId) {
-  return await api.get(
-    host +
-      `/data/going?where=eventId%3D%22${eventId}%22%20and%20_ownerId%3D%22${userId}%22&count`
-  );
+export async function getTotalLikes(factId) {
+    return get(endpoints.totalLikes(factId));
+}
+
+export async function userHasLiked(factId, userId) {
+    return get(endpoints.hasLiked(factId, userId));
 }

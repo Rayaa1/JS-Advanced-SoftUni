@@ -1,16 +1,15 @@
-import { html} from '../../node_modules/lit-html/lit-html.js'
+import { html } from '../lib.js';
+import { updateNav } from './navigation.js';
 
-const homeTemplate = () => html`
- <section id="home">
-          <img
-            src="./images/pngkey.com-hunting-png-6697165-removebg-preview.png"
-            alt="home"
-          />
-          <h2>Searching for a job?</h2>
-          <h3>The right place for a new career start!</h3>
-        </section>`
+const homeTemplate = () => html`<section id="home">
+    <h1>
+        Welcome to our website, where curiosity meets enjoyment! Discover fascinating fun facts that engage and entertain
+        everyone, inviting you to participate in the joy of learning something new together.
+    </h1>
+    <img id="logo-img" src="./images/logo.png" alt="" />
+</section>`;
 
-export function homePage(ctx) {
-    ctx.render(homeTemplate())
-
+export function showHome(ctx) {
+    ctx.render(homeTemplate());
+    updateNav();
 }

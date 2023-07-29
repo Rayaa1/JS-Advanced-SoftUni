@@ -1,64 +1,49 @@
-import { html } from '../../node_modules/lit-html/lit-html.js'
-import { deleteOffer, getById } from '../data/offers.js'
-import { getUserData } from '../util.js'
+import { deleteItem, getById, getTotalLikes, like, userHasLiked } from '../api/data.js';
+import { html, nothing } from '../lib.js';
 
-//TODO
-const detailsTemplate = (offer,onDelete) => html`
-<section id="details">
-          <div id="details-wrapper">
-            <img id="details-img" src="${offer.imageUrl}" alt="example1" />
-            <p id="details-title">${offer.title}</p>
-            <p id="details-category">
-              Category: <span id="categories">${offer.category}</span>
-            </p>
-            <p id="details-salary">
-              Salary: <span id="salary-number">${offer.salary}</span>
-            </p>
-            <div id="info-wrapper">
-              <div id="details-description">
-                <h4>Description</h4>
-                <span
-                ${offer.description}</span
-                >
-              </div>
-              <div id="details-requirements">
-                <h4>Requirements</h4>
-                <span
-                ${offer.requirements}</span
-                >
-              </div>
+const detailsTemplate = (fact, isLogged, isOwner, onLike, hasLiked, totalLikes, onDelete) => html`<section id="details">
+    <div id="details-wrapper">
+        <img id="details-img" src=${fact.imageUrl} alt="example1" />
+        <p id="details-category">${fact.category}</p>
+        <div id="info-wrapper">
+            <div id="details-description">
+                <p id="description">${fact.description}</p>
+                <p id="more-info">${fact.moreInfo}</p>
             </div>
-            <p>Applications: <strong id="applications">1</strong></p>
 
-            ${offer.canEdit ? html `<div id="action-buttons">
-              <a href="/catalog/${offer._id}/edit" id="edit-btn">Edit</a>
-              <a @click = ${onDelete} href="javascript:void(0)" id="delete-btn">Delete</a>
+            <h3>Likes:<span id="likes">${totalLikes}</span></h3>
+            <div id="action-buttons">
+                ${isOwner
+                    ? html`<a href="/edit/${fact._id}" id="edit-btn">Edit</a>
+                          <a @click=${onDelete} href="javascript:void(0)" id="delete-btn">Delete</a>`
+                    : nothing}
+                ${isLogged && !isOwner && !hasLiked
+                    ? html`<a @click=${onLike} href="javascript:void(0)" id="like-btn">Like</a>`
+                    : nothing}
+            </div>
+        </div>
+    </div>
+</section>`;
 
-              <!--Bonus - Only for logged-in users ( not authors )-->
-              <a href="" id="apply-btn">Apply</a>
-            </div>`:null}
-            
-          </div>
-        </section>`
+export async function showDetails(ctx) {
+    const id = ctx.params.id;
+    const isLogged = ctx.user;
+    const [fact, totalLikes, hasLiked] = await Promise.all([getById(id), getTotalLikes(id), userHasLiked(id, ctx.user?._id)]);
+    const isOwner = ctx.user?._id == fact._ownerId;
 
+    ctx.render(detailsTemplate(fact, isLogged, isOwner, onLike, hasLiked, totalLikes, onDelete));
 
-
-export async function detailsPage(ctx) {
-    const id = ctx.params.id
-    const offer =await getById(id)
-    const userData = getUserData()
-    if(userData && userData._id == offer._ownerId){
-        offer.canEdit = true
-
+    async function onLike() {
+        await like(id);
+        ctx.page.redirect('/details/' + id);
     }
-    ctx.render(detailsTemplate(offer,onDelete))
-async function onDelete(){
-  const choice = confirm('Are you sure?')
-  if(choice){
-    await deleteOffer(id)
-    ctx.page.redirect('/catalog')
 
-  }
+    async function onDelete() {
+        const choice = confirm('Are u sure?');
 
-}
+        if (choice) {
+            await deleteItem(id);
+            ctx.page.redirect('/catalog');
+        }
+    }
 }

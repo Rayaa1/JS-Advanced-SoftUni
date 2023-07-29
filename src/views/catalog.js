@@ -1,27 +1,18 @@
-import { html } from '../../node_modules/lit-html/lit-html.js'
-import { getAllOffers } from '../data/offers.js'
+import { getAll } from '../api/data.js';
+import { html } from '../lib.js';
 
-//TODO
-const catalogTemplate = (offers) => html`
-<section id="dashboard">
-          <h2>Job Offers</h2>
+const catalogTemplate = (facts) => html`<h2>Fun Facts</h2>
+    ${facts.length > 0 ? html`<section id="dashboard">${facts.map(factTemplate)}</section>` : html`<h2>No Fun Facts yet.</h2>`} `;
 
-          ${offers.length > 0 ? offers.map(offerCard) : html`<h2>No offers yet.</h2>`}
-        </section>
-`
+const factTemplate = (fact) => html`<div class="fact">
+    <img src=${fact.imageUrl} alt="example2" />
+    <h3 class="category">${fact.category}</h3>
+    <p class="description">${fact.description}</p>
+    <a class="details-btn" href="/details/${fact._id}">More Info</a>
+</div>`;
 
-const offerCard = (offer) => html`
-<div class="offer">
-            <img src=${offer.imageUrl} alt="example2" />
-            <p>
-              <strong>Title: </strong
-              ><span class="title">${offer.title}</span>
-            </p>
-            <p><strong>Salary:</strong><span class="salary">${offer.salary}</span></p>
-            <a class="details-btn" href="/catalog/${offer._id}">Details</a>
-          </div>`
-export async function catalogPage(ctx) {
-    const offers = await getAllOffers()
-    ctx.render(catalogTemplate(offers))
+export async function showCatalog(ctx) {
+    const facts = await getAll();
 
+    ctx.render(catalogTemplate(facts));
 }
